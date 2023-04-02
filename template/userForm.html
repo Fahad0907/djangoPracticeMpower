@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{%block userform%}
+								
+					
+    <form action="">
+        
+        <label for="">usename</label>
+        <input id="username" type="text">
+
+        <label for="">Email</label>
+        <input id="email" type="email">
+
+        <label for="">password</label>
+        <input id="password" type="password">
+
+        <hr>
+        <input id="file" type="file">
+
+        <!-- <label for="">user id</label>
+        <input id="userid" type="text"> -->
+
+        <label for="">age</label>
+        <input id="age" type="text">
+
+        <button onclick="handleSubmit()" type="button">submit</button>
+    </form>
+
+
+    <script>
+        
+     async  function handleSubmit() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const username = document.getElementById("username").value;
+
+        const file = document.getElementById("file");
+        //const userid = document.getElementById("userid").value;
+        const age = document.getElementById("age").value;
+
+      
+        const formData = new FormData();
+
+        formData.append("image", file.files[0]);
+        //formData.append("user_id", userid);
+        formData.append("age", age);
+
+        formData.append("email", email);
+        formData.append("password", password);
+        formData.append("username", username);
+
+        try{
+            const data = await fetch("http://127.0.0.1:8000/profile/api/reg", {
+                method: "POST",
+                body: formData,
+             })
+             console.log(data)
+       
+        }
+        catch(err){
+            console.log(err)
+        }
+  }
+    </script>
+{% endblock %}

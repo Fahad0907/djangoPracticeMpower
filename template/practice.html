@@ -1,0 +1,31 @@
+
+<body>
+    <button type="button" onclick="handleClick()">
+        <h1>Click</h1>
+    </button>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+    const newArray = []
+    const handleClick =()=>{
+
+        if(newArray.length>0)
+            newArray.push(newArray[newArray.length -1] +1)
+        else
+            newArray.push(1);
+        
+        const div = document.createElement("div");
+
+        const idName = "heading" + newArray[newArray.length -1].toString();
+        console.log(idName, typeof idName);
+        // $('body').append(`<h1 id=${idName}>new line </h1> <button onclick="deleteElement(${idName});">delete</button>`);
+        div.innerHTML = `<div id=${idName}> <h1 >new line ${idName} </h1> <button onClick="deleteElement('${idName}');">delete</button> </div>`;
+       
+        // add the div element to the page
+        document.body.appendChild(div);
+    }
+    const deleteElement=(idName)=>{
+        document.getElementById(idName).remove();
+
+    }
+</script>

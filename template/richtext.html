@@ -1,0 +1,148 @@
+
+{% extends 'base.html' %}
+{%block richtext%}
+<h1 id="userid" style="visibility: hidden;" >{{user.id}}</h1>
+<div id="banner_id" class="input-group">
+    <span class="input-group-text">Banner Image</span>
+    <input id="imageFile" type="file" aria-label="First name" class="form-control">
+</div>
+<div class="form-group mt-3">
+    <label for="exampleInputEmail1">Title</label>
+    <input type="text" class="form-control" id="titleId" aria-describedby="emailHelp" placeholder="Enter title">
+    
+  </div>
+<div id="mainDiv" style="width: 100%;">
+    
+</div>
+<div id="submitButton" style="display: none;" class="text-center mt-3">
+    <button onclick="submit()"  class="btn btn-success">submit</button>
+</div>
+<div class="mt-3 float-end">
+    <button  id="showoption" onclick="showOption()" class="btn btn-primary mt-5 mb-5" type="button">+</button>
+</div>
+<!-- <div class="text-center mb-5">
+    <select onchange="getSelectValue()"  id="select">
+        <option value="">Select</option>
+        <option value="html">html</option>
+        <option value="graph">graph</option>
+    </select>
+
+    
+</div>
+-->
+<!-- <div id="texteditordiv" style="display: block;">
+    <textarea  id="editor" name="editor1"></textarea>
+    <button onclick="handleSubmit()" type="button">submit</button>
+</div>  -->
+
+
+
+
+
+<script>
+    const user = document.getElementById("userid").innerHTML;
+    console.log(user)
+    let newArray = []
+    
+    const showOption=()=>{
+        if(newArray.length>0)
+            newArray.push(newArray[newArray.length -1] +1)
+        else
+            newArray.push(1);
+        
+
+        const getButton = document.getElementById("showoption")
+        const getbanner = document.getElementById("banner_id");
+        const div = document.createElement("div");
+        const getMainDiv = document.getElementById("mainDiv");
+        const generatedId = 'id' + newArray[newArray.length - 1].toString();
+        const generatedSelectId = 'select' + newArray[newArray.length - 1].toString();
+        const editorDiv = 'texteditordiv' + newArray[newArray.length - 1].toString();
+        div.innerHTML = `
+        <div id=${generatedId}>
+        <select  onchange="getSelectValue('${generatedSelectId}')"  id=${generatedSelectId} class="mt-3 mb-3">
+            <option value="">Select</option>
+            <option value="html">html</option>
+            <option value="graph">graph</option>
+        </select>
+
+        <div id=${editorDiv} style="display: none;">
+            <textarea class="textarea"  id="editor${newArray[newArray.length - 1].toString()}" name="editor1${newArray[newArray.length - 1].toString()}"></textarea>
+            <button class="btn btn-danger mt-3 mb-3" onclick="handleDelete('${generatedId}')" type="button">Delete</button>
+        </div>
+
+    </div>
+
+        `
+        // const parent = getButton.parentNode;
+        // parent.insertBefore(div,getButton);
+        // getbanner.insertAdjacentElement('newElement',div);
+        getMainDiv.appendChild(div);
+        
+        CKEDITOR.replace(`editor1${newArray[newArray.length - 1].toString()}`);
+   
+    }
+    
+    CKEDITOR.replace("editor1");
+    // let c = 0;
+  
+    function getSelectValue(id){
+        const getShowButton = document.getElementById("submitButton");
+        getShowButton.style.display = "block";
+        
+        const extractNumber = parseInt(id.match(/\d+/),10)
+        
+        const textid = "texteditordiv" + extractNumber.toString();
+        
+        let selectedValue = document.getElementById(id).value;
+       
+        if(selectedValue === "html"){
+            if(document.getElementById(textid).style.display=== "none")
+                document.getElementById(textid).style.display = "block";
+        }
+    }
+    
+    function handleDelete(id){
+       
+        console.log(id);
+        const extractNumber = parseInt(id.match(/\d+/),10)
+        console.log(extractNumber);
+        newArray = newArray.filter(e => e !==extractNumber)
+        console.log(newArray);
+        document.getElementById(id).remove();
+    }
+
+    async function submit(){
+        let richTextData = []
+        const title = document.getElementById("titleId").value;
+       
+        for(let i=0;i<newArray.length;i++){
+            const editor = "editor" + newArray[i].toString();
+            richTextData.push(CKEDITOR.instances[editor].getData());
+          
+        }
+      
+        newArray = []
+        const imageFile = document.getElementById("imageFile");
+        const formData = new FormData();
+        formData.append("textdata", JSON.stringify(richTextData));
+        formData.append("user_id",user);
+        formData.append("title",title);
+        formData.append("banner_image",imageFile.files[0]);
+
+        try{
+            const data = await fetch("http://127.0.0.1:8000/page/", {
+                method: "POST",
+                body: formData,
+             })
+             console.log(data)
+       
+        }
+        catch(err){
+            console.log(err)
+        }
+
+       
+    }
+</script>
+{% endblock %}
